@@ -14,16 +14,16 @@
                 Margin="10,0,0,18"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
-                Click="Button_Click_2"
+                Click="OnAddButtonClicked"
                 Content="Add Images" />
         <Button Width="90"
                 Height="25"
                 Margin="0,0,10,18"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
-                Click="Button_Click_3"
+                Click="OnExportButtonClicked"
                 Content="Create ICO" />
-        <Border Margin="10,31,10,61"
+        <Border Margin="10,21,10,61"
                 BorderBrush="#FFCDCDCD"
                 BorderThickness="1">
             <Grid>
@@ -38,7 +38,6 @@
                                     <TextBlock Width="70"
                                                Text="{Binding SizeDisplay}" />
                                     <TextBlock Text="{Binding Filename}" />
-                                    <Button Content="del" Width="10" Height="10"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -50,18 +49,18 @@
                            VerticalAlignment="Center"
                            FontSize="14"
                            Foreground="#FF919191"
-                           Text="Add PNG images for each resolution you want to embed into the ICO file. The resolution of the PNG images is kept unchanged, they are not resized."
+                           Text="Add one PNG image for each resolution you want to embed into the ICO file.&#x0a;&#x0a;The resolution of the PNG images is kept unchanged, they are not resized in order to keep maximum quality."
                            TextWrapping="Wrap" />
             </Grid>
         </Border>
-        <TextBlock Margin="0,0,4,2"
+        <TextBlock Margin="0,0,10,0"
                    HorizontalAlignment="Right"
                    VerticalAlignment="Top"
                    FontSize="8"
                    Foreground="#FFCDCDCD"
                    Text="Michael Göricke"
                    TextWrapping="Wrap" />
-        <TextBlock Margin="10,10,0,0"
+        <TextBlock Margin="10,0,0,0"
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Text="Loaded Files:"
@@ -71,7 +70,7 @@
                 Margin="126,0,0,18"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
-                Click="Button_Click"
+                Click="OnClearButtonClicked"
                 Content="Clear" />
     </Grid>
 </Window>

@@ -67,13 +67,12 @@ namespace IcoGenerator
             AddFiles(files);
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void OnAddButtonClicked(object sender, RoutedEventArgs e)
         {
             var openDialog = new System.Windows.Forms.OpenFileDialog();
             openDialog.Filter = "Image File (*.png)|*.png";
             openDialog.Multiselect = true;
-
-            System.Windows.Forms.DialogResult result = openDialog.ShowDialog();
+            var result = openDialog.ShowDialog();
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
@@ -91,6 +90,12 @@ namespace IcoGenerator
                 }
 
                 var size = GetImageSize(file);
+
+                if (size.Height > 256 || size.Width > 256)
+                {
+                    continue;
+                }
+
                 var loaded = loadedFiles.Find(x => x.Size == size);
 
                 if (loaded != null)
@@ -116,18 +121,17 @@ namespace IcoGenerator
             Hint.Visibility = Visibility.Collapsed;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OnClearButtonClicked(object sender, RoutedEventArgs e)
         {
             loadedFiles.Clear();
             FileList.ItemsSource = null;
             Hint.Visibility = Visibility.Visible;
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void OnExportButtonClicked(object sender, RoutedEventArgs e)
         {
             var saveDialog = new Microsoft.Win32.SaveFileDialog();
             saveDialog.Filter = "ICO File (*.ico)|*.ico";
-
             var result = saveDialog.ShowDialog();
 
             if (result == true)
@@ -138,7 +142,6 @@ namespace IcoGenerator
 
         private void ExportIco(string icoFilename)
         {
-            //https://gist.github.com/darkfall/1656050
             try
             {
                 FileStream outputFile = new FileStream(icoFilename, FileMode.Create);
@@ -148,52 +151,46 @@ namespace IcoGenerator
                 // icon dir
 
                 // must be 0
-                Int16 int16 = 0;
-                binWriter.Write(int16);
+                binWriter.Write((short)0);
 
                 // type
-                int16 = 1;
-                binWriter.Write(int16);
+                binWriter.Write((short)1);
 
                 // # of images
-                int16 = (Int16)loadedFiles.Count;
-                binWriter.Write(int16);
+                binWriter.Write((short)loadedFiles.Count);
 
                 // ICONDIRENTRY 
 
                 foreach (var file in loadedFiles)
                 {
                     // width
-                    var size = file.Size.Width;
-                    byte int8 = (byte)(size == 256 ? 0 : size);
-                    binWriter.Write(int8);
+                    var width = file.Size.Width;
+                    binWriter.Write((byte)(width == 256 ? 0 : width));
 
                     // height
-                    binWriter.Write(int8);
+                    var height = file.Size.Height;
+                    binWriter.Write((byte)(height == 256 ? 0 : height));
 
                     // # colors in palette
-                    int8 = 0;
-                    binWriter.Write(int8);
+                    binWriter.Write((byte)0);
 
                     // reserved => 0
-                    binWriter.Write(int8);
+                    binWriter.Write((byte)0);
 
                     // # color planes
-                    int16 = 1;
-                    binWriter.Write(int16);
+                    binWriter.Write((short)1);
 
                     // # bit per pixel
-                    int16 = 0;
-                    binWriter.Write(int16);
+                    binWriter.Write((short)0);
 
+                    // remember file position - will be patched later
                     offsets.Add(outputFile.Position);
-                    UInt32 uint32 = 0;
 
                     // size of the image
-                    binWriter.Write(uint32);
+                    binWriter.Write((uint)0);
 
                     // offset of the image in file
-                    binWriter.Write(uint32);
+                    binWriter.Write((uint)0);
                 }
 
                 int resIndex = 0;
@@ -220,12 +217,10 @@ namespace IcoGenerator
                     outputFile.Position = offsets[resIndex];
 
                     // patch size
-                    var uint32 = (UInt32)size;
-                    binWriter.Write(uint32);
+                    binWriter.Write((uint)size);
 
                     // patch offset of the image
-                    uint32 = (UInt32)startPosition;
-                    binWriter.Write(uint32);
+                    binWriter.Write((uint)startPosition);
 
                     // set position back to the end
                     outputFile.Position = currentPosition;
